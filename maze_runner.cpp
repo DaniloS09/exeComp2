@@ -19,6 +19,8 @@ Maze maze;
 int num_rows;
 int num_cols;
 std::stack<Position> valid_positions;
+//tesde de commit 
+
 
 // Função para carregar o labirinto de um arquivo
 Position load_maze(const std::string& file_name) {
