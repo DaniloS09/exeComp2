@@ -86,7 +86,7 @@ bool is_valid_position(int row, int col) {
     // 2. Verifique se a posição é um caminho válido (maze[row][col] == 'x')
     // 3. Retorne true se ambas as condições forem verdadeiras, false caso contrário
     if((row >= 0) && (row < num_rows) && (col >= 0) && (col < num_cols)){ //1. Limites do labirinto.
-        if( (maze[row][col] == 'x')){
+        if((maze[row][col] == 'x')||(maze[row][col] == 's')){
             return true;
         } 
         return false; // Placeholder - substitua pela lógica correta
@@ -111,8 +111,9 @@ bool walk(Position pos) {
     //    b. Chame walk recursivamente para esta posição
     //    c. Se walk retornar true, propague o retorno (retorne true)
     // 7. Se todas as posições foram exploradas sem encontrar a saída, retorne false
+    //cout << "conteudo da prox. posição:  " << maze[pos.row][pos.col] << endl;
     if(maze[pos.row][pos.col] == 's'){ //4. verifique se é a saída.
-        cout << "entrei aqui."<< endl; 
+        //cout << "entrei aqui."<< endl; 
         return true;
     }
     maze[pos.row][pos.col] = '.'; //1. Marcação posição atual.
@@ -141,6 +142,7 @@ bool walk(Position pos) {
             return true;
         }
     }
+  //  cout << "Cheguei aqui." << endl;
     return false; // Placeholder - substitua pela lógica correta
 }
 
@@ -157,7 +159,7 @@ int main(int argc, char* argv[]) {
     }
 
     bool exit_found = walk(initial_pos);
-
+    //cout << "exit: " << exit_found << endl;
     if (exit_found) {
         std::cout << "Saída encontrada!" << std::endl;
     } else {
