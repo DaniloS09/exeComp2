@@ -35,24 +35,28 @@ Position load_maze(const std::string& file_name) {
         cout << "Erro ao abrir o arquivo do labirinto" << endl;
         exit(1);
     } 
-    int lin, col; 
-    inFile >> lin >> col; //2. lendo linhas e colunas.
-    maze.resize(lin, vector<char>(col));//3. redimensionando a matriz;
+    //int lin, col; 
+
+    inFile >> num_rows >> num_cols; //2. lendo linhas e colunas.
+    maze.resize(num_rows, vector<char>(num_cols));//3. redimensionando a matriz;
+
 /*     for(int i = 0; i <= lin; i++){
         maze[i].resize(col);
     } */
+
     Position p_inicial = {-1, -1};
-    for(int i = 0; i <= lin; i++){ //4. Leia o conteudo do labirinto.
-        for(int j = 0; j <= col; j++){
+    for(int i = 0; i < num_rows; i++){ //4. Leia o conteudo do labirinto.
+        for(int j = 0; j < num_cols; j++){
             inFile >> maze[i][j];
 
             if(maze[i][j] == 'e'){
-                p_inicial = maze[i][j];
+                p_inicial.row = i; //numero da linha da posição inicial.
+                p_inicial.col = j; //numero da coluna da posição inciiaç;
             }
         }
     }
-    if(p_inicial[i][j] == {-1, -1}){ //6. tratamento de erro 1, fazer mais tratamentos...
-        cout << "Erro: posição inciial não encontrada." << endl;
+    if(p_inicial.row == -1 or p_inicial.col == -1){ //6. tratamento de erro 1, fazer mais tratamentos...
+        cout << "Erro: posição incial não encontrada." << endl;
         exit(1);
     }
 
