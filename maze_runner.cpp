@@ -85,14 +85,13 @@ bool is_valid_position(int row, int col) {
     //    (row >= 0 && row < num_rows && col >= 0 && col < num_cols)
     // 2. Verifique se a posição é um caminho válido (maze[row][col] == 'x')
     // 3. Retorne true se ambas as condições forem verdadeiras, false caso contrário
-    if(row > num_rows || col > num_cols){ //1. Limites do labirinto.
-        cout << "Posição fora dos limites do labirinto." << endl;
-        return false;
-    }else if(row == -1 || col == -1){ //2. Posição invalida.
-        cout << "Posição Inválida" << endl;
-        return false; 
+    if((row >= 0) && (row < num_rows) && (col >= 0) && (col < num_cols)){ //1. Limites do labirinto.
+        if( (maze[row][col] == 'x')){
+            return true;
+        } 
+        return false; // Placeholder - substitua pela lógica correta
     }
-    return true; // Placeholder - substitua pela lógica correta
+    return false;  
 }
 
 // Função principal para navegar pelo labirinto
@@ -112,7 +111,36 @@ bool walk(Position pos) {
     //    b. Chame walk recursivamente para esta posição
     //    c. Se walk retornar true, propague o retorno (retorne true)
     // 7. Se todas as posições foram exploradas sem encontrar a saída, retorne false
-    
+    if(maze[pos.row][pos.col] == 's'){ //4. verifique se é a saída.
+        cout << "entrei aqui."<< endl; 
+        return true;
+    }
+    maze[pos.row][pos.col] = '.'; //1. Marcação posição atual.
+    print_maze(); //2.; Atualização do labirinnto.
+    this_thread::sleep_for(chrono::milliseconds(50)); //3. atraso
+    Position pos_acima = {pos.row - 1, pos.col};
+    Position pos_abaixo = {pos.row + 1, pos.col};
+    Position pos_esquerda = {pos.row, pos.col - 1};
+    Position pos_direita = {pos.row, pos.col + 1};
+    if(is_valid_position(pos_acima.row, pos_acima.col)){
+        valid_positions.push(pos_acima);
+   }
+    if(is_valid_position(pos_abaixo.row, pos_abaixo.col)){
+        valid_positions.push(pos_abaixo);
+   }
+    if(is_valid_position(pos_esquerda.row, pos_esquerda.col)){
+        valid_positions.push(pos_esquerda);
+   }
+    if(is_valid_position(pos_direita.row, pos_direita.col)){
+        valid_positions.push(pos_direita);
+   }
+    while(!valid_positions.empty()){
+        Position prox_pos = valid_positions.top();
+        valid_positions.pop(); 
+        if(walk(prox_pos)){ 
+            return true;
+        }
+    }
     return false; // Placeholder - substitua pela lógica correta
 }
 
