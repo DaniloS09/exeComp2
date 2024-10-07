@@ -8,6 +8,7 @@
 // Representação do labirinto
 using Maze = std::vector<std::vector<char>>;
 
+using namespace std;
 // Estrutura para representar uma posição no labirinto
 struct Position {
     int row;
@@ -19,10 +20,7 @@ Maze maze;
 int num_rows;
 int num_cols;
 std::stack<Position> valid_positions;
-//tesde de commit 
-
-
-// Função para carregar o labirinto de um arquivo
+// Função para carregar o labirinto de um arquivo 
 Position load_maze(const std::string& file_name) {
     // TODO: Implemente esta função seguindo estes passos:
     // 1. Abra o arquivo especificado por file_name usando std::ifstream
@@ -32,10 +30,36 @@ Position load_maze(const std::string& file_name) {
     // 5. Encontre e retorne a posição inicial ('e')
     // 6. Trate possíveis erros (arquivo não encontrado, formato inválido, etc.)
     // 7. Feche o arquivo após a leitura
-    
-    return {-1, -1}; // Placeholder - substitua pelo valor correto
-}
+    ifstream inFile(file_name); // 1. abrindo arquivo.
+    if(!inFile){
+        cout << "Erro ao abrir o arquivo do labirinto" << endl;
+        exit(1);
+    } 
+    int lin, col; 
+    inFile >> lin >> col; //2. lendo linhas e colunas.
+    maze.resize(lin, vector<char>(col));//3. redimensionando a matriz;
+/*     for(int i = 0; i <= lin; i++){
+        maze[i].resize(col);
+    } */
+    Position p_inicial = {-1, -1};
+    for(int i = 0; i <= lin; i++){ //4. Leia o conteudo do labirinto.
+        for(int j = 0; j <= col; j++){
+            inFile >> maze[i][j];
 
+            if(maze[i][j] == 'e'){
+                p_inicial = maze[i][j];
+            }
+        }
+    }
+    if(p_inicial[i][j] == {-1, -1}){ //6. tratamento de erro 1, fazer mais tratamentos...
+        cout << "Erro: posição inciial não encontrada." << endl;
+        exit(1);
+    }
+
+    inFile.close(); // 7. fechar arquivo.
+ // Placeholder - substitua pelo valor correto
+    return p_inicial;
+}
 // Função para imprimir o labirinto
 void print_maze() {
     // TODO: Implemente esta função
