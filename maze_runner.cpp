@@ -55,7 +55,7 @@ Position load_maze(const std::string& file_name) {
             }
         }
     }
-    if(p_inicial.row == -1 or p_inicial.col == -1){ //6. tratamento de erro 1, fazer mais tratamentos...
+    if(p_inicial.row == -1 || p_inicial.col == -1){ //6. tratamento de erro 1, fazer mais tratamentos...
         cout << "Erro: posição incial não encontrada." << endl;
         exit(1);
     }
@@ -70,6 +70,12 @@ void print_maze() {
     // 1. Percorra a matriz 'maze' usando um loop aninhado
     // 2. Imprima cada caractere usando std::cout
     // 3. Adicione uma quebra de linha (std::cout << '\n') ao final de cada linha do labirinto
+    for(int i = 0; i < num_rows; i++){ //1. Percorrendo a matriz. 
+        for(int j = 0; j < num_cols; j++){
+            cout << maze[i][j]; //Imprimindo cada caracter.
+        }
+        cout << '\n'; //3. Quebra de linha a cada linha. 
+    }
 }
 
 // Função para verificar se uma posição é válida
@@ -79,8 +85,14 @@ bool is_valid_position(int row, int col) {
     //    (row >= 0 && row < num_rows && col >= 0 && col < num_cols)
     // 2. Verifique se a posição é um caminho válido (maze[row][col] == 'x')
     // 3. Retorne true se ambas as condições forem verdadeiras, false caso contrário
-
-    return false; // Placeholder - substitua pela lógica correta
+    if(row > num_rows || col > num_cols){ //1. Limites do labirinto.
+        cout << "Posição fora dos limites do labirinto." << endl;
+        return false;
+    }else if(row == -1 || col == -1){ //2. Posição invalida.
+        cout << "Posição Inválida" << endl;
+        return false; 
+    }
+    return true; // Placeholder - substitua pela lógica correta
 }
 
 // Função principal para navegar pelo labirinto
