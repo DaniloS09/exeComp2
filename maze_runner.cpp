@@ -4,7 +4,10 @@
 #include <stack>
 #include <thread>
 #include <chrono>
+#include <mutex>
 
+
+ // Variável compartilhada entre as threads
 // Representação do labirinto
 using Maze = std::vector<std::vector<char>>;
 
@@ -20,6 +23,8 @@ Maze maze;
 int num_rows;
 int num_cols;
 std::stack<Position> valid_positions;
+bool exit_found = false;
+
 // Função para carregar o labirinto de um arquivo 
 Position load_maze(const std::string& file_name) {
     // TODO: Implemente esta função seguindo estes passos:
@@ -105,49 +110,67 @@ bool walk(Position pos) {
     //    c. Se walk retornar true, propague o retorno (retorne true)
     // 7. Se todas as posições foram exploradas sem encontrar a saída, retorne false
 
+
     if(maze[pos.row][pos.col] == 's'){ //4
+        exit_found = true;
         return true;
-    } else {
+    } 
         maze[pos.row][pos.col] = '.'; //1
-        /* print_maze(); //2
-        this_thread::sleep_for(chrono::milliseconds(50)); //3 */
-        //5
+
+
+
+        vector<Position> pos_adj;
+        
         Position pos_acima = {pos.row - 1, pos.col};
         Position pos_abaixo = {pos.row + 1, pos.col};
         Position pos_esquerda = {pos.row, pos.col - 1};
         Position pos_direita = {pos.row, pos.col + 1};
         if(is_valid_position(pos_acima.row, pos_acima.col)){
-            //valid_positions.push(pos_acima);
-            thread acima(walk, pos_acima);
-            acima.detach();
+            pos_adj.push_back(pos_acima);
         }
         if(is_valid_position(pos_abaixo.row, pos_abaixo.col)){
-            //valid_positions.push(pos_abaixo);
-            thread abaixo(walk, pos_abaixo);
-            abaixo.detach();
+            pos_adj.push_back(pos_abaixo);
         }
         if(is_valid_position(pos_esquerda.row, pos_esquerda.col)){
-            valid_positions.push(pos_esquerda);
-            thread esquerda(walk, pos_esquerda);
-            esquerda.detach();
+            pos_adj.push_back(pos_esquerda);
         }
         if(is_valid_position(pos_direita.row, pos_direita.col)){
-            valid_positions.push(pos_direita);
-            thread direita(walk, pos_direita);
-            direita.detach();
+            pos_adj.push_back(pos_direita);
+        }
+        vector<std::thread> threads; //vetor para armazenar todas as threads
+        for(size_t i = 0; i < pos_adj.size(); i++){ //cria uma thread para cada caminho adjascente da rota principal
+            threads.push_back(thread (walk, pos_adj[i]));
         }
 
-    /*     while(!valid_positions.empty()){//6
-            Position prox_pos = valid_positions.top();
-            valid_positions.pop(); 
-            //thread caminho(walk, prox_pos);
-            //caminho.detach();
-            if(){ 
+        if(!pos_adj.empty()){
+            if(walk(pos_adj[0])){
+                for(auto& th : threads){
+                    if(th.joinable()){
+                       th.join();
+                    }
+                }
+                exit_found = true;
                 return true;
             }
+        }
+        /* while(!valid_positions.empty()){//6
+            Position prox_pos = valid_positions.top();
+            valid_positions.pop();
+            if(walk(prox_pos)){ 
+                return true;
+            }
+            if(valid_positions.size() > 1){
+               
+
+            }
+            //caminho.detach();
+
         }  */
-    }
-// Placeholder - substitua pela lógica correta
+/*  for(int i = 0; i < threads; i++){ //espera as threads termianarem.
+        if(threads[i].joinable()){
+            threads[i].join();
+        }
+    } */
     return false; //7
 }
 
@@ -163,10 +186,12 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    bool exit_found = walk(initial_pos); 
-    while(!exit_found){ //Impressão do labirinto.
-        print_maze(); 
-        this_thread::sleep_for(chrono::milliseconds(500)); 
+    thread explorar(walk, initial_pos);
+    explorar.join(); 
+    while(!exit_found){
+        print_maze(); //2
+        this_thread::sleep_for(chrono::milliseconds(50));
+        //5
     }
     if (exit_found) {
         cout << "Saída encontrada!" << endl;
