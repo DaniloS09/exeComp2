@@ -24,10 +24,9 @@ int num_rows;
 int num_cols;
 std::stack<Position> valid_positions;
 bool exit_found = false;
-
 // Função para carregar o labirinto de um arquivo 
 Position load_maze(const std::string& file_name) {
-    // TODO: Implemente esta função seguindo estes passos:
+    // TODO: Implem\ente esta função seguindo estes passos:
     // 1. Abra o arquivo especificado por file_name usando std::ifstream
     // 2. Leia o número de linhas e colunas do labirinto
     // 3. Redimensione a matriz 'maze' de acordo (use maze.resize())
@@ -123,9 +122,6 @@ bool walk(Position pos){
         } 
 
         maze[pos.row][pos.col] = '.'; //1
-        print_maze(); 
-        this_thread::sleep_for(chrono::milliseconds(500));
-
 
         vector<Position> pos_adj; //vetor com as posições adjascentes disponiveis.
         Position pos_acima = {pos.row - 1, pos.col};
@@ -196,11 +192,13 @@ int main(int argc, char* argv[]) {
     thread explorar(walk, initial_pos);
     explorar.join();
 
-/*     while(!exit_found){
-            print_maze(); //2
-            this_thread::sleep_for(chrono::milliseconds(50)); 
-            //5
-    } */
+    while(!exit_found){
+        if(atualiza == true){
+             print_maze(); //2
+            this_thread::sleep_for(chrono::milliseconds(500));             //5
+        }  
+    }
+
     if (exit_found) {
         cout << "Saída encontrada!" << endl;
     } else {
