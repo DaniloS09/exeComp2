@@ -92,8 +92,8 @@ bool is_valid_position(int row, int col) {
     return false;  
 }
 
-// Função principal para navegar pelo labirinto
-bool walk(Position pos) {
+ // Função principal para navegar pelo labirinto
+bool walk(Position pos){
     // TODO: Implemente a lógica de navegação aqui
     // 1. Marque a posição atual como visitada (maze[pos.row][pos.col] = '.')
     // 2. Chame print_maze() para mostrar o estado atual do labirinto
@@ -110,17 +110,24 @@ bool walk(Position pos) {
     //    c. Se walk retornar true, propague o retorno (retorne true)
     // 7. Se todas as posições foram exploradas sem encontrar a saída, retorne false
 
+    valid_positions.push(pos); //iniciando a pilha de posições válidas com a posição inicial.
 
-    if(maze[pos.row][pos.col] == 's'){ //4
-        exit_found = true;
-        return true;
-    } 
+    while(!valid_positions.empty() && !exit_found){ //Exploração das posições validas.
+        Position prox_pos = valid_positions.top();
+        valid_positions.pop();
+    
+
+        if(maze[pos.row][pos.col] == 's'){ //4
+            exit_found = true;
+            return true;
+        } 
+
         maze[pos.row][pos.col] = '.'; //1
+        print_maze(); 
+        this_thread::sleep_for(chrono::milliseconds(50));
 
 
-
-        vector<Position> pos_adj;
-        
+        vector<Position> pos_adj; //vetor com as posições adjascentes disponiveis.
         Position pos_acima = {pos.row - 1, pos.col};
         Position pos_abaixo = {pos.row + 1, pos.col};
         Position pos_esquerda = {pos.row, pos.col - 1};
@@ -138,19 +145,15 @@ bool walk(Position pos) {
             pos_adj.push_back(pos_direita);
         }
         vector<std::thread> threads; //vetor para armazenar todas as threads
-        for(size_t i = 0; i < pos_adj.size(); i++){ //cria uma thread para cada caminho adjascente da rota principal
-            threads.push_back(thread (walk, pos_adj[i]));
+        for (auto& i : pos_adj) {
+            threads.push_back(std::thread([i]() {
+                walk(i); // Cada thread chama `walk` para explorar seu caminho
+            }));
         }
 
-        if(!pos_adj.empty()){
-            if(walk(pos_adj[0])){
-                for(auto& th : threads){
-                    if(th.joinable()){
-                       th.join();
-                    }
-                }
-                exit_found = true;
-                return true;
+        for (auto& i : threads) {
+            if (i.joinable()) {
+                i.join();
             }
         }
         /* while(!valid_positions.empty()){//6
@@ -171,8 +174,11 @@ bool walk(Position pos) {
             threads[i].join();
         }
     } */
+    }
+
     return false; //7
 }
+
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
@@ -187,12 +193,12 @@ int main(int argc, char* argv[]) {
     }
 
     thread explorar(walk, initial_pos);
-    explorar.join(); 
-    while(!exit_found){
-        print_maze(); //2
-        this_thread::sleep_for(chrono::milliseconds(50));
-        //5
-    }
+    explorar.join();
+/*     while(!exit_found){
+            print_maze(); //2
+            this_thread::sleep_for(chrono::milliseconds(50)); 
+            //5
+    } */
     if (exit_found) {
         cout << "Saída encontrada!" << endl;
     } else {
