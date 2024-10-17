@@ -124,7 +124,7 @@ bool walk(Position pos){
 
         maze[pos.row][pos.col] = '.'; //1
         print_maze(); 
-        this_thread::sleep_for(chrono::milliseconds(50));
+        this_thread::sleep_for(chrono::milliseconds(500));
 
 
         vector<Position> pos_adj; //vetor com as posições adjascentes disponiveis.
@@ -192,8 +192,10 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+
     thread explorar(walk, initial_pos);
     explorar.join();
+
 /*     while(!exit_found){
             print_maze(); //2
             this_thread::sleep_for(chrono::milliseconds(50)); 
