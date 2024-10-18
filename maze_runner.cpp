@@ -4,14 +4,12 @@
 #include <stack>
 #include <thread>
 #include <chrono>
-#include <mutex>
 
+using namespace std;
 
  // Variável compartilhada entre as threads
 // Representação do labirinto
 using Maze = std::vector<std::vector<char>>;
-
-using namespace std;
 // Estrutura para representar uma posição no labirinto
 struct Position {
     int row;
@@ -24,6 +22,7 @@ int num_rows;
 int num_cols;
 std::stack<Position> valid_positions;
 bool exit_found = false;
+
 // Função para carregar o labirinto de um arquivo 
 Position load_maze(const std::string& file_name) {
     // TODO: Implem\ente esta função seguindo estes passos:
@@ -65,7 +64,7 @@ void print_maze() {
     // 1. Percorra a matriz 'maze' usando um loop aninhado
     // 2. Imprima cada caractere usando std::cout
     // 3. Adicione uma quebra de linha (std::cout << '\n') ao final de cada linha do labirinto
-
+    cout << '\n'; 
     for(int i = 0; i < num_rows; i++){ //1
         for(int j = 0; j < num_cols; j++){
             cout << maze[i][j]; //2
@@ -108,21 +107,19 @@ bool walk(Position pos){
     //    b. Chame walk recursivamente para esta posição
     //    c. Se walk retornar true, propague o retorno (retorne true)
     // 7. Se todas as posições foram exploradas sem encontrar a saída, retorne false
-
     valid_positions.push(pos); //iniciando a pilha de posições válidas com a posição inicial.
-
     while(!valid_positions.empty() && !exit_found){ //Exploração das posições validas.
         Position prox_pos = valid_positions.top();
         valid_positions.pop();
     
-
         if(maze[pos.row][pos.col] == 's'){ //4
             exit_found = true;
             return true;
         } 
 
         maze[pos.row][pos.col] = '.'; //1
-
+        print_maze(); //2
+        this_thread::sleep_for(chrono::milliseconds(500));
         vector<Position> pos_adj; //vetor com as posições adjascentes disponiveis.
         Position pos_acima = {pos.row - 1, pos.col};
         Position pos_abaixo = {pos.row + 1, pos.col};
@@ -146,35 +143,14 @@ bool walk(Position pos){
                 walk(i); // Cada thread chama `walk` para explorar seu caminho
             }));
         }
-
         for (auto& i : threads) {
             if (i.joinable()) {
                 i.join();
             }
         }
-        /* while(!valid_positions.empty()){//6
-            Position prox_pos = valid_positions.top();
-            valid_positions.pop();
-            if(walk(prox_pos)){ 
-                return true;
-            }
-            if(valid_positions.size() > 1){
-               
-
-            }
-            //caminho.detach();
-
-        }  */
-/*  for(int i = 0; i < threads; i++){ //espera as threads termianarem.
-        if(threads[i].joinable()){
-            threads[i].join();
-        }
-    } */
     }
-
     return false; //7
 }
-
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
@@ -188,16 +164,8 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-
     thread explorar(walk, initial_pos);
     explorar.join();
-
-    while(!exit_found){
-        if(atualiza == true){
-             print_maze(); //2
-            this_thread::sleep_for(chrono::milliseconds(500));             //5
-        }  
-    }
 
     if (exit_found) {
         cout << "Saída encontrada!" << endl;
