@@ -162,7 +162,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    thread explorar(walk, initial_pos);
+    thread explorar(walk, initial_pos); //Trhead para iniciar a exploração.
     explorar.join();
 
     if (exit_found) {
