@@ -116,10 +116,9 @@ bool walk(Position pos){
             exit_found = true;
             return true;
         } 
-
         maze[pos.row][pos.col] = '.'; //1
         print_maze(); //2
-        this_thread::sleep_for(chrono::milliseconds(500));
+        this_thread::sleep_for(chrono::milliseconds(50));
         vector<Position> pos_adj; //vetor com as posições adjascentes disponiveis.
         Position pos_acima = {pos.row - 1, pos.col};
         Position pos_abaixo = {pos.row + 1, pos.col};
@@ -157,7 +156,6 @@ int main(int argc, char* argv[]) {
         cerr << "Uso: " << argv[0] << " <arquivo_labirinto>" << endl;
         return 1;
     }
-
     Position initial_pos = load_maze(argv[1]);
     if (initial_pos.row == -1 || initial_pos.col == -1) {
         cerr << "Posição inicial não encontrada no labirinto." << endl;
