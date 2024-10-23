@@ -4,6 +4,7 @@
 #include <stack>
 #include <thread>
 #include <chrono>
+#include <mutex>
 
 using namespace std;
 
@@ -22,7 +23,7 @@ int num_rows;
 int num_cols;
 std::stack<Position> valid_positions;
 bool exit_found = false;
-
+mutex m;
 // Função para carregar o labirinto de um arquivo 
 Position load_maze(const std::string& file_name) {
     // TODO: Implem\ente esta função seguindo estes passos:
@@ -64,13 +65,16 @@ void print_maze() {
     // 1. Percorra a matriz 'maze' usando um loop aninhado
     // 2. Imprima cada caractere usando std::cout
     // 3. Adicione uma quebra de linha (std::cout << '\n') ao final de cada linha do labirinto
+    system("clear"); 
     cout << '\n'; 
+
     for(int i = 0; i < num_rows; i++){ //1
         for(int j = 0; j < num_cols; j++){
             cout << maze[i][j]; //2
         }
         cout << '\n'; //3
     }
+
 }
 
 // Função para verificar se uma posição é válida
@@ -117,8 +121,10 @@ bool walk(Position pos){
             return true;
         } 
         maze[pos.row][pos.col] = '.'; //1
+        m.lock();
         print_maze(); //2
         this_thread::sleep_for(chrono::milliseconds(50));
+        m.unlock();
         vector<Position> pos_adj; //vetor com as posições adjascentes disponiveis.
         Position pos_acima = {pos.row - 1, pos.col};
         Position pos_abaixo = {pos.row + 1, pos.col};
@@ -164,7 +170,6 @@ int main(int argc, char* argv[]) {
 
     thread explorar(walk, initial_pos); //Trhead para iniciar a exploração.
     explorar.join();
-
     if (exit_found) {
         cout << "Saída encontrada!" << endl;
     } else {
